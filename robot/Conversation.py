@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from . import config, Player, constants, logging, utils, ASR, AI, TTS
+from robot.Brain import Brain
 
 from pixel_ring import pixel_ring
 
@@ -11,6 +12,7 @@ class Conversation(object):
         self.asr = ASR.get_engine_by_slug(config.get('engine', 'asr'))
         self.ai = AI.get_engine_by_slug(config.get('engine', 'robot'))
         self.tts = TTS.get_engine_by_slug(config.get('engine', 'tts'))
+        self.brain = Brain(self)
 
         self._pixel = pixel_ring
 
@@ -41,9 +43,11 @@ class Conversation(object):
         :return:
         """
         try:
-            logger.info("开始交由聊天机器人进行处理")
-            msg = self.ai.chat(query)
-            self.say(msg)
+            if not self.brain.parse(query):
+                logger.info("未命中技能，开始交由聊天机器人进行处理")
+                msg = self.ai.chat(query)
+                self.say(msg)
+
         except Exception as e:
             logger.critical(e)
 
