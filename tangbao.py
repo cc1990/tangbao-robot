@@ -25,7 +25,6 @@ class TangBao(object):
 
     def _detected_callback(self):
         Player.play(constants.getData('ding.wav'))
-        self._conversation._pixel.think()
         logger.info('唤醒成功，开始录音...')
 
     def _interrupt_callback(self):
